@@ -20,6 +20,7 @@ async function run() {
         await client.connect();
         const accountCollection = client.db("crypto").collection("account");
         const jobCollection = client.db("crypto").collection("jobs");
+        const applicationCollection = client.db("crypto").collection("applications");
 
 
         //post api for account
@@ -34,12 +35,18 @@ async function run() {
             const result = await jobCollection.insertOne(newJob);
             res.send(result);
         })
+        //post api for applications
+        app.post('/applications', async (req, res) => {
+            const newApplication = req.body;
+            const application = await applicationCollection.insertOne(newApplication);
+            res.send(application);
+        })
         //get all jobs  api
         app.get('/jobs', async (req, res) => {
             const jobs = await jobCollection.find({}).toArray();
             res.send(jobs);
         });
-        //get a applicants  api
+        //get a account  api
         app.get('/account/:email', async (req, res) => {
             const email = req.params.email
             const query = { email: email }
