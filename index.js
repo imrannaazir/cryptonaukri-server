@@ -18,16 +18,34 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
         await client.connect();
-        const applicantCollection = client.db("crypto").collection("applicants");
+        const accountCollection = client.db("crypto").collection("account");
+        const jobCollection = client.db("crypto").collection("jobs");
 
 
-        //post api for applicants
-        app.post('/applicants', async (req, res) => {
+        //post api for account
+        app.post('/account', async (req, res) => {
             const newApplicant = req.body;
             const result = await applicantCollection.insertOne(newApplicant);
             res.send(result);
         })
-
+        //post api for jobs
+        app.post('/jobs', async (req, res) => {
+            const newJob = req.body;
+            const result = await jobCollection.insertOne(newJob);
+            res.send(result);
+        })
+        //get all jobs  api
+        app.get('/jobs', async (req, res) => {
+            const jobs = await jobCollection.find({}).toArray();
+            res.send(jobs);
+        });
+        //get a applicants  api
+        app.get('/account/:email', async (req, res) => {
+            const email = req.params.email
+            const query = { email: email }
+            const user = await applicantCollection.findOne(query);
+            res.send(user);
+        });
     }
     finally {
 
