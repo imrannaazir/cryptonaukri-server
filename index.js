@@ -11,7 +11,7 @@ app.use(cors())
 app.use(express.json())
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.USER_NAME}:${process.env.PASSWORD}@cluster0.geuva.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
@@ -26,7 +26,7 @@ async function run() {
         //post api for account
         app.post('/account', async (req, res) => {
             const newApplicant = req.body;
-            const result = await applicantCollection.insertOne(newApplicant);
+            const result = await accountCollection.insertOne(newApplicant);
             res.send(result);
         })
         //post api for jobs
@@ -46,11 +46,25 @@ async function run() {
             const jobs = await jobCollection.find({}).toArray();
             res.send(jobs);
         });
+        //get all jobs  api
+        app.get('/jobs/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: ObjectId(id) }
+            const job = await jobCollection.findOne(query);
+            res.send(job);
+        });
+        //get all jobs  api
+        app.get('/applications/:website_link', async (req, res) => {
+            const website_link = req.params.website_link
+            const query = { website_link: website_link }
+            const applicants = await applicationCollection.find(query).toArray();
+            res.send(applicants);
+        });
         //get a account  api
         app.get('/account/:email', async (req, res) => {
             const email = req.params.email
             const query = { email: email }
-            const user = await applicantCollection.findOne(query);
+            const user = await accountCollection.findOne(query);
             res.send(user);
         });
     }
